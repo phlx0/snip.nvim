@@ -1,0 +1,48 @@
+name: Bug report
+description: Something isn't working
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report this.
+
+  - type: input
+    id: nvim-version
+    attributes:
+      label: Neovim version
+      placeholder: "nvim --version"
+    validations:
+      required: true
+
+  - type: input
+    id: snip-version
+    attributes:
+      label: snip version
+      placeholder: "snip --version"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant config
+      description: Your setup() call, if any.
+      render: lua

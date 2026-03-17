@@ -1,0 +1,314 @@
+*snip.nvim.txt*    Browse and paste snip snippets inside Neovim.
+
+Author:   phlx0
+License:  MIT
+Homepage: https://github.com/phlx0/snip.nvim
+
+================================================================================
+CONTENTS                                                         *snip-contents*
+
+  1. Introduction ................................ |snip-intro|
+  2. Requirements ................................ |snip-requirements|
+  3. Setup ....................................... |snip-setup|
+  4. Configuration ............................... |snip-config|
+  5. Commands .................................... |snip-commands|
+  6. Browser ..................................... |snip-browser|
+  7. API ......................................... |snip-api|
+  8. Extending ................................... |snip-extending|
+  9. License ..................................... |snip-license|
+
+================================================================================
+1. INTRODUCTION                                                     *snip-intro*
+
+snip.nvim connects Neovim to snip (https://github.com/phlx0/snip), a local
+CLI snippet manager backed by SQLite.
+
+Browse your snippet library without leaving the editor, paste snippets at the
+cursor, copy them to clipboard, or run them in a terminal split — all through
+a clean two-pane floating window.
+
+================================================================================
+2. REQUIREMENTS                                               *snip-requirements*
+
+  • Neovim 0.10+
+  • snip CLI installed and available on $PATH
+    https://github.com/phlx0/snip
+
+================================================================================
+3. SETUP                                                            *snip-setup*
+
+Add snip.nvim with your plugin manager. The plugin works out of the box with
+no configuration required.
+
+lazy.nvim: >lua
+  {
+    "phlx0/snip.nvim",
+    cmd  = { "SnipList", "Snip", "SnipCopy", "SnipRun", "SnipDelete", "SnipAdd",
+             "SnipExport", "SnipImport" },
+    keys = { { "<leader>ss", "<cmd>SnipList<cr>", desc = "Browse snippets" } },
+  }
+<
+
+To customise behaviour, call setup() somewhere in your config: >lua
+  require("snip").setup({
+    cmd = "snip",
+    keymaps = {
+      paste      = { "<CR>", "p" },
+      yank       = "y",
+      delete     = "d",
+      search     = "/",
+      tag_filter = "t",
+      clear      = "<C-l>",
+      refresh    = "R",
+      help       = "?",
+      close      = { "q", "<Esc>" },
+    },
+    ui = {
+      width      = 0.85,
+      height     = 0.80,
+      list_ratio = 0.28,
+      border     = "rounded",
+    },
+  })
+<
+
+setup() is optional. All values shown above are the defaults.
+
+================================================================================
+4. CONFIGURATION                                                   *snip-config*
+
+                                                                *snip-config-cmd*
+cmd ~
+  Type: string  Default: "snip"
+
+  Path or name of the snip executable. Change this if snip is not on $PATH or
+  you want to point at a specific binary: >lua
+    require("snip").setup({ cmd = "/usr/local/bin/snip" })
+<
+
+                                                           *snip-config-keymaps*
+keymaps ~
+  Type: table
+
+  Keymaps active inside the snippet browser. Each value is a key string (e.g.
+  "y") or a list of key strings (e.g. { "<CR>", "p" }).
+
+  Key         Default           Action ~
+  paste       { "<CR>", "p" }   paste snippet into buffer, close browser
+  yank        "y"               copy snippet to system clipboard
+  delete      "d"               delete snippet (confirmation required)
+  search      "/"               search title, description, tags, language
+  tag_filter  "t"               open tag picker, filter list
+  clear       "<C-l>"           clear all active filters
+  refresh     "R"               reload all snippets from snip
+  help        "?"               show keymap help overlay
+  close       { "q", "<Esc>" }  close the browser
+
+                                                               *snip-config-ui*
+ui ~
+  Type: table
+
+  ui.width  (number, default 0.85)
+    Total browser width as a fraction of &columns.
+
+  ui.height  (number, default 0.80)
+    Total browser height as a fraction of &lines.
+
+  ui.list_ratio  (number, default 0.28)
+    Fraction of the total width used by the list pane.
+
+  ui.border  (string|table, default "rounded")
+    Border style passed to nvim_open_win(). Accepts any valid Neovim border
+    value: "none", "single", "double", "rounded", "solid", "shadow", or a
+    custom array.
+
+================================================================================
+5. COMMANDS                                                      *snip-commands*
+
+                                                                    *:SnipList*
+:SnipList
+  Open the interactive snippet browser.
+
+                                                                        *:Snip*
+:Snip {title}
+  Paste snippet {title} below the current cursor line.
+  Supports tab-completion of snippet titles.
+
+                                                                    *:SnipCopy*
+:SnipCopy {title}
+  Copy snippet {title} to the system clipboard via the snip CLI.
+  Supports tab-completion of snippet titles.
+
+                                                                     *:SnipRun*
+:SnipRun {title}
+  Run snippet {title} as a shell command in a new terminal split.
+  Supports tab-completion of snippet titles.
+
+                                                                  *:SnipDelete*
+:SnipDelete {title}
+  Delete snippet {title}. Supports tab-completion.
+
+                                                                     *:SnipAdd*
+:SnipAdd
+  Add the current buffer's file as a snippet. The title is derived from the
+  filename (without extension).
+
+:'<,'>SnipAdd
+  Add the visual selection as a snippet. Prompts for a title. The file
+  extension is inferred from the buffer's filetype for syntax highlighting.
+
+                                                                  *:SnipExport*
+:SnipExport [path]
+  Export all snippets to a JSON file at {path}. If {path} is omitted, writes
+  to {stdpath("data")}/snip-export.json. Supports file completion.
+
+                                                                  *:SnipImport*
+:SnipImport {path}
+  Import snippets from a JSON file at {path}. Supports file completion.
+
+================================================================================
+6. BROWSER                                                        *snip-browser*
+
+Open with |:SnipList|. Two floating windows appear side by side:
+
+  Left pane   — navigable list of snippet titles with inline language and tag
+                hints rendered as virtual text
+  Right pane  — live preview of the selected snippet with syntax highlighting
+
+All snippet data is fetched in one CLI call on open (via --export), so
+navigation is instant from the first keypress. The list window title shows the
+active filter and count, e.g. "Snippets (3/12)  ·  docker  ·  #bash". The
+preview window title shows the selected snippet's language.
+
+Default keymaps (press `?` to see them inside the browser): >
+
+  Key              Action
+  ────────────────────────────────────────────────────
+  j / k            Navigate the list
+  <CR> / p         Paste snippet at cursor, close browser
+  y                Copy snippet to system clipboard
+  d                Delete snippet (confirmation required)
+  /                Search title, description, tags, language
+  t                Filter by tag (opens a picker)
+  <C-l>            Clear all active filters
+  R                Reload all snippets from snip
+  ?                Show keymap help overlay
+  q / <Esc>        Close the browser
+<
+
+All keymaps are configurable via |snip-config-keymaps|.
+
+================================================================================
+7. API                                                                *snip-api*
+
+snip.nvim exposes a Lua API for scripting and integration work.
+
+                                                               *snip.setup()*
+require("snip").setup({opts})
+  Merge {opts} into the default config. See |snip-config|.
+
+                                                                *snip.open()*
+require("snip").open()
+  Open the interactive snippet browser.
+
+                                                               *snip.paste()*
+require("snip").paste({title})
+  Paste snippet {title} below the current cursor line.
+
+                                                                *snip.copy()*
+require("snip").copy({title})
+  Copy snippet {title} to the system clipboard.
+
+                                                                 *snip.run()*
+require("snip").run({title})
+  Run snippet {title} in a terminal split.
+
+                                                              *snip.delete()*
+require("snip").delete({title})
+  Delete snippet {title}.
+
+                                                             *snip.add_buf()*
+require("snip").add_buf()
+  Add the current buffer's file as a snippet.
+
+                                                       *snip.add_selection()*
+require("snip").add_selection({line1}, {line2})
+  Add lines {line1}–{line2} of the current buffer as a snippet.
+  Prompts for a title.
+
+                                                              *snip.export()*
+require("snip").export({path})
+  Export all snippets to {path} as JSON.
+
+                                                              *snip.import()*
+require("snip").import({path})
+  Import snippets from the JSON file at {path}.
+
+================================================================================
+8. EXTENDING                                                    *snip-extending*
+
+snip.nvim is intentionally small. New integrations belong in separate files,
+not wired into the three core modules.
+
+Telescope integration ~
+
+  Create lua/snip/telescope.lua in your own config or as a plugin: >lua
+    local cli     = require("snip.cli")
+    local actions = require("telescope.actions")
+    local astate  = require("telescope.actions.state")
+    local pickers = require("telescope.pickers")
+    local finders = require("telescope.finders")
+    local conf    = require("telescope.config").values
+
+    local M = {}
+
+    function M.picker(opts)
+      pickers.new(opts or {}, {
+        prompt_title = "Snippets",
+        finder = finders.new_table({ results = cli.list() }),
+        sorter = conf.generic_sorter(opts or {}),
+        attach_mappings = function(buf, _)
+          actions.select_default:replace(function()
+            local title = astate.get_selected_entry()[1]
+            actions.close(buf)
+            require("snip").paste(title)
+          end)
+          return true
+        end,
+      }):find()
+    end
+
+    return M
+<
+  Then bind it: >lua
+    vim.keymap.set("n", "<leader>fs", require("snip.telescope").picker)
+<
+
+Custom data access ~
+
+  Any UI layer can read data through the CLI module directly: >lua
+    local cli = require("snip.cli")
+
+    local titles  = cli.list()          -- string[] of all titles
+    local snippet = cli.get("my-cmd")   -- table|nil for a single snippet
+    local all     = cli.export()        -- table[] of all snippets at once
+<
+
+  cli.export() fetches all snippet data in a single subprocess call and is
+  the preferred way to build any UI that needs to show the full library.
+  The returned tables have the same shape as cli.get() — title, content,
+  language, description, tags.
+
+Adding new CLI commands ~
+
+  Add a new function to lua/snip/cli.lua following the existing pattern.
+  All subprocess calls use the internal exec() helper which automatically
+  picks up config.cmd.
+
+================================================================================
+9. LICENSE                                                        *snip-license*
+
+MIT License. See LICENSE in the project root.
+
+================================================================================
+vim:tw=78:ts=8:ft=help:norl:

@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest an idea for snip.nvim
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for the idea.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What are you trying to do that snip.nvim doesn't support today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches you've thought about?

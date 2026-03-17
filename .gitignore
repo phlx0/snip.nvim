@@ -1,0 +1,25 @@
+# Neovim swap / undo files
+*.swp
+*.swo
+*.swn
+.nvim/
+
+# Lua compiled
+luac.out
+
+# Coverage
+luacov.report.out
+luacov.stats.out
+.luacov
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# LuaRocks local installs
+lua_modules/
+.luarocks/
