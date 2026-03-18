@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches: [main]
-    tags: ["v*"]
   pull_request:
     branches: [main]
 
@@ -31,44 +30,3 @@ jobs:
             echo "doc/tags is out of date — run ':helptags doc/' and commit the result"
             exit 1
           fi
-
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          body: |
-            Browse and paste your [snip](https://github.com/phlx0/snip) snippets without leaving Neovim.
-
-            ## Install
-
-            ```lua
-            {
-              "phlx0/snip.nvim",
-              cmd  = { "SnipList", "Snip", "SnipCopy", "SnipRun", "SnipDelete", "SnipAdd", "SnipExport", "SnipImport" },
-              keys = {
-                { "<leader>ss", "<cmd>SnipList<cr>", desc = "Browse snippets" },
-              },
-            }
-            ```
-
-            ## What's in this release
-
-            **Browser** — two-pane floating window with a navigable list and live preview. All snippet data is batch-fetched on open so navigation is instant. Inline language and tag hints appear as virtual text on each row. The title bar shows the active filter and count.
-
-            **Filtering** — `/` searches title, description, language, and tags. `t` opens a tag picker. `<C-l>` clears all active filters. `R` reloads from snip without closing the browser.
-
-            **Commands** — `:SnipList`, `:Snip`, `:SnipCopy`, `:SnipRun`, `:SnipDelete`, `:SnipAdd` (buffer or visual selection), `:SnipExport`, `:SnipImport`. All title arguments support tab-completion (cached, no subprocess on every `<Tab>`).
-
-            **Configurable** — all keymaps, window dimensions, and border style are overridable via `setup()`. Press `?` inside the browser to see current bindings.
-
-            **Lua API** — `require("snip.cli").export()` gives any integration one-call access to the full snippet library.
-
-            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for the full list.
