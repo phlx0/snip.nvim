@@ -1,6 +1,6 @@
 local M = {}
 
-M.version = "0.1.0"
+M.version = "0.3.0"
 
 -- ---------------------------------------------------------------------------
 -- Config
@@ -59,7 +59,7 @@ function M.paste(title)
     vim.notify("snip: '" .. title .. "' not found", vim.log.levels.ERROR)
     return
   end
-  local content = snippet.content or snippet.code or ""
+  local content = snippet.content or ""
   local lines = vim.split(content, "\n", { plain = true })
   if lines[#lines] == "" then table.remove(lines) end
   local row = vim.api.nvim_win_get_cursor(0)[1]

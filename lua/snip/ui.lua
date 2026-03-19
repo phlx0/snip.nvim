@@ -137,6 +137,11 @@ local function render_list()
     local virt_len = 0
 
     if s then
+      if s.pinned then
+        local chunk = "  [pin]"
+        table.insert(virt, { chunk, "DiagnosticHint" })
+        virt_len = virt_len + #chunk
+      end
       if s.language and s.language ~= "" then
         local chunk = "  [" .. s.language .. "]"
         table.insert(virt, { chunk, "Comment" })
@@ -190,13 +195,16 @@ local function update_preview()
   local lines, ft = {}, "text"
 
   if snippet then
+    if snippet.pinned then
+      vim.list_extend(lines, { "-- [pinned]", "" })
+    end
     if snippet.description and snippet.description ~= "" then
       vim.list_extend(lines, { "-- " .. snippet.description, "" })
     end
     if snippet.tags and #snippet.tags > 0 then
       vim.list_extend(lines, { "-- tags: " .. table.concat(snippet.tags, ", "), "" })
     end
-    local content = snippet.content or snippet.code or ""
+    local content = snippet.content or ""
     for line in (content .. "\n"):gmatch("([^\n]*)\n") do
       table.insert(lines, line)
     end
@@ -248,7 +256,7 @@ local function action_paste()
   end
   local orig = state.orig_win
   M.close()
-  local content = snippet.content or snippet.code or ""
+  local content = snippet.content or ""
   local lines = vim.split(content, "\n", { plain = true })
   if lines[#lines] == "" then table.remove(lines) end
   if orig and vim.api.nvim_win_is_valid(orig) then

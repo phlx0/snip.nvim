@@ -21,7 +21,8 @@ CONTENTS                                                         *snip-contents*
 1. INTRODUCTION                                                     *snip-intro*
 
 snip.nvim connects Neovim to snip (https://github.com/phlx0/snip), a local
-CLI snippet manager backed by SQLite.
+CLI snippet manager. Snippets are stored as individual Markdown files with a
+SQLite index for fast querying.
 
 Browse your snippet library without leaving the editor, paste snippets at the
 cursor, copy them to clipboard, or run them in a terminal split — all through
@@ -171,8 +172,8 @@ ui ~
 
 Open with |:SnipList|. Two floating windows appear side by side:
 
-  Left pane   — navigable list of snippet titles with inline language and tag
-                hints rendered as virtual text
+  Left pane   — navigable list of snippet titles with inline pinned, language,
+                and tag hints rendered as virtual text
   Right pane  — live preview of the selected snippet with syntax highlighting
 
 All snippet data is fetched in one CLI call on open (via --export), so
@@ -297,7 +298,7 @@ Custom data access ~
   cli.export() fetches all snippet data in a single subprocess call and is
   the preferred way to build any UI that needs to show the full library.
   The returned tables have the same shape as cli.get() — title, content,
-  language, description, tags.
+  language, description, tags, pinned.
 
 Adding new CLI commands ~
 

@@ -7,6 +7,25 @@ This project uses [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-03-19
+
+### Added
+
+- Pinned snippets are now indicated in the browser list with a `[pin]` virtual
+  text hint (highlighted via `DiagnosticHint`) and a `-- [pinned]` header line
+  in the preview pane — adapts to the `pinned` field introduced in snip v0.7.0
+
+### Changed
+
+- `cli.export()` now expects a bare JSON array from `--export`; the dead
+  `{ snippets: [...] }` fallback has been removed
+- `snippet.content` is the only supported content field; the unused `snippet.code`
+  fallback has been removed throughout `ui.lua` and `init.lua`
+- Updated field documentation: `cli.get()` and `cli.export()` now document
+  `id` (12-character hex string, changed from integer in snip v0.7.0) and `pinned`
+- Introduction updated to reflect snip's file-based storage (Markdown files +
+  SQLite index) introduced in v0.7.0
+
 ## [0.2.0] — 2026-03-19
 
 ### Added
@@ -89,6 +108,7 @@ This project uses [semantic versioning](https://semver.org/).
 
 - Vimdoc at `:help snip.nvim` covering setup, all commands, browser keymaps, full API, and an extending guide with a working Telescope example
 
-[Unreleased]: https://github.com/phlx0/snip.nvim/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/phlx0/snip.nvim/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/phlx0/snip.nvim/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/phlx0/snip.nvim/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/phlx0/snip.nvim/releases/tag/v0.1.0

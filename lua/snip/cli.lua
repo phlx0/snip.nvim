@@ -22,7 +22,7 @@ function M.list()
 end
 
 --- Returns snippet metadata for {title} as a table, or nil on failure.
---- Expected fields: title, content, language, description, tags
+--- Fields: id (string), title, content, language, description, tags, pinned
 function M.get(title)
   local out, _, code = exec({ "--json", title })
   if code ~= 0 or out == "" then return nil end
@@ -32,17 +32,13 @@ end
 
 --- Exports all snippets in one call. Returns a list of snippet tables.
 --- Used to pre-populate the browser cache so navigation is instant.
+--- Each table has: title, content, language, description, tags, pinned.
 function M.export()
   local out, _, code = exec({ "--export" })
   if code ~= 0 or out == "" then return {} end
   local ok, data = pcall(vim.json.decode, out)
-  if not ok then return {} end
-  -- Handle both a bare array and { snippets = [...] }
-  if vim.islist(data) then return data end
-  if type(data) == "table" and data.snippets and vim.islist(data.snippets) then
-    return data.snippets
-  end
-  return {}
+  if not ok or not vim.islist(data) then return {} end
+  return data
 end
 
 --- Copies {title} to the system clipboard via the snip CLI. Returns bool.
