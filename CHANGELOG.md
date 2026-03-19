@@ -7,6 +7,12 @@ This project uses [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-03-19
+
+### Added
+
+- `install.sh` — one-line manual install for users who don't use a package manager; clones to the standard Neovim pack path, generates helptags, and doubles as an updater when run again
+
 ## [0.1.0] — 2026-03-17
 
 ### Commands
@@ -83,5 +89,6 @@ This project uses [semantic versioning](https://semver.org/).
 
 - Vimdoc at `:help snip.nvim` covering setup, all commands, browser keymaps, full API, and an extending guide with a working Telescope example
 
-[Unreleased]: https://github.com/phlx0/snip.nvim/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/phlx0/snip.nvim/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/phlx0/snip.nvim/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/phlx0/snip.nvim/releases/tag/v0.1.0

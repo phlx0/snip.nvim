@@ -24,8 +24,9 @@ You saved that docker command in snip. Now you're deep in a file and you don't w
 
 ## Install
 
+**lazy.nvim** (recommended — lazy-loads on first command):
+
 ```lua
--- lazy.nvim (recommended — lazy-loads on first command)
 {
   "phlx0/snip.nvim",
   cmd  = { "SnipList", "Snip", "SnipCopy", "SnipRun", "SnipDelete", "SnipAdd", "SnipExport", "SnipImport" },
@@ -36,6 +37,15 @@ You saved that docker command in snip. Now you're deep in a file and you don't w
   },
 }
 ```
+
+**Manual** (no package manager):
+
+```sh
+bash <(curl -fsSL https://raw.githubusercontent.com/phlx0/snip.nvim/main/install.sh)
+```
+
+The script clones the plugin into Neovim's standard pack path and generates
+helptags. Run it again any time to update.
 
 No setup call required. snip.nvim works out of the box. Add one if you want
 to customise anything:
